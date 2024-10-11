@@ -1,0 +1,21 @@
+FROM python:3.7-slim AS base
+
+WORKDIR /app
+
+RUN groupadd -r webservice && useradd --no-log-init -r -g webservice webservice
+
+RUN pip install networkx dash plotly
+
+FROM python:3.7-slim
+
+COPY --from=base /lib/ /lib/
+
+COPY --from=base /bin/ /bin/
+
+COPY . .
+
+USER webservice:webservice
+
+EXPOSE 8050
+
+CMD ["python", "GraphAnalysis.py", "obj_dependency_data.csv"]
